@@ -18,6 +18,17 @@ type DataDictionary struct {
 	IndexFields []string `yaml:"fields"` //用于索引，搜索的字段
 }
 
+//是否存在字段
+func (this *DataDictionary) IsContainField(f string) bool {
+	for _, v := range this.IndexFields {
+		if v == f {
+			return true
+		}
+	}
+
+	return false
+}
+
 type MetaService interface {
 	GetDictionary(key string) DataDictionary
 }

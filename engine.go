@@ -16,19 +16,32 @@ type SearchEngine struct {
 }
 
 func (this *SearchEngine) Init() {
-	option := rs.SearchOption{10, 1000, this.Host, this.DBIndex, this.Pwd}
+	option := rs.SearchOption{10, 10, this.Host, this.DBIndex, this.Pwd}
 	this.se = &rs.SearchEngine{}
 	this.se.Init(option)
 
 }
 
-func (this *SearchEngine) Search(name string, field ...rs.Field) *rs.PageSearchResult {
-	dict := this.Meta.GetDictionary(name)
+func (this *SearchEngine) Search(query *QueryParameters) *rs.PageSearchResult {
+	if query == nil {
+		return nil
+	}
+
+	dict := this.Meta.GetDictionary(query.Name)
 	if dict.Code == "" {
 		return nil
 	}
-	this.se.CreateIndex(name)
-	rs := this.se.Search(name, field...)
+	//只将定义了索引字段的纳入查询参数中
+	this.se.CreateIndex(query.Name)
+	var fields []rs.Field
+	for k, v := range query.Parameters {
+		if dict.IsContainField(k) {
+			fields = append(fields, rs.Field{Key: k, Value: v})
+		}
+
+	}
+
+	rs := this.se.Search(query.Name, fields...)
 	return rs
 
 }

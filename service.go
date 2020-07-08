@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"github.com/aosfather/bingo_mvc"
-	rs "github.com/aosfather/bingo_utils/redis"
 	"log"
 )
 
@@ -41,12 +40,7 @@ func (this *QueryController) GetHandles() bingo_mvc.HandleMap {
 
 func (this *QueryController) query(a interface{}) interface{} {
 	parameters := a.(*QueryParameters)
-	var fields []rs.Field
-	for k, v := range parameters.Parameters {
-		fields = append(fields, rs.Field{Key: k, Value: v})
-	}
-
-	return this.SE.Search(parameters.Name, fields...)
+	return this.SE.Search(parameters)
 }
 
 func (this *QueryController) add(a interface{}) interface{} {
