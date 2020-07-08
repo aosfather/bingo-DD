@@ -1,0 +1,16 @@
+bingo:
+  port: 8080
+  static: statics
+  template: templates
+  template_fix: tp
+  usedb: false
+dd:
+  logfile: dd.log
+  path: metas
+  redis:
+       addr: localhost:6379
+       db: 0
+       pwd:
+       expire: 3600
+
+
