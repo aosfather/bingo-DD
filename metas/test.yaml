@@ -1,0 +1,5 @@
+code: mykey
+label: 测试系统
+style: index
+paginated: true
+fields: [a,b,c]
