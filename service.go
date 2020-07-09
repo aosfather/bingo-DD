@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"github.com/aosfather/bingo_mvc"
 	"log"
+	"sync"
+	"time"
 )
 
 type QueryParameters struct {
@@ -27,8 +29,8 @@ type RawData struct {
 
 //查询接口
 type QueryController struct {
-	SE    *SearchEngine `mapper:"name(query);url(/query);method(POST);style(JSON)" Inject:""`
-	Index string        `mapper:"name(add);url(/add);method(POST);style(JSON)"`
+	SE     *SearchEngine `mapper:"name(query);url(/query);method(POST);style(JSON)" Inject:""`
+	Locker sync.Mutex    `mapper:"name(add);url(/add);method(POST);style(JSON)"`
 }
 
 func (this *QueryController) GetHandles() bingo_mvc.HandleMap {
@@ -39,7 +41,11 @@ func (this *QueryController) GetHandles() bingo_mvc.HandleMap {
 }
 
 func (this *QueryController) query(a interface{}) interface{} {
+	this.Locker.Lock()
+	start := time.Now()
 	parameters := a.(*QueryParameters)
+	defer printTimer(start)
+	defer this.Locker.Unlock()
 	return this.SE.Search(parameters)
 }
 
@@ -51,4 +57,9 @@ func (this *QueryController) add(a interface{}) interface{} {
 	}
 
 	return ""
+}
+
+func printTimer(start time.Time) {
+	end := time.Now()
+	log.Println("used:", (end.Sub(start).Milliseconds()), "ms")
 }
